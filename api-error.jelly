@@ -1,0 +1,240 @@
+<?jelly escape-by-default='true'?>
+<!DOCTYPE html [
+    <!ENTITY nbsp "&#38;#38;nbsp&#59;">
+]>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define">
+  <html>
+    <head>
+      <title>${project.name}</title>
+      <style>
+        body table, td, th, p, h1, h2 {
+        margin:5px;
+        font:normal normal
+        100% Georgia, Serif;
+        background-color: #ffffff;
+        }
+        h1, h2 {
+        border-bottom:dotted 1px #999999;
+        padding:5px;
+        margin-top:10px;
+        margin-bottom:10px;
+        color: #000000;
+        font: normal bold 130%
+        Georgia,Serif;
+        background-color:#f0f0f0;
+        }
+        tr.gray {
+        background-color:#f0f0f0;
+        }
+        h2 {
+        padding:5px;
+        margin-top:5px;
+        margin-bottom:5px;
+        font: italic bold 110% Georgia,Serif;
+        }
+        .bg2 {
+        color:black;
+        background-color:#E0E0E0;
+        font-size:110%
+        }
+        th {
+        font-weight: bold;
+        }
+        tr, td, th {
+        padding:2px;
+        }
+        td.test_passed {
+        color:blue;
+        }
+        td.test_failed {
+        color:red;
+        }
+        td.center {
+          text-align: center;
+        }
+        td.test_skipped {
+        color:grey;
+        }
+        .console {
+        font: normal normal 90% Courier New,
+        monotype;
+        padding:0px;
+        margin:0px;
+        }
+        div.content, div.header {
+        background: #ffffff;
+        border: dotted
+        1px #666;
+        margin: 2px;
+        content:
+        2px;
+        padding: 2px;
+        }
+        table.border, th.border, td.border {
+        border:
+        1px solid black;
+        border-collapse:collapse;
+        }
+         table tbody tr.even { background-color: white; }
+         table tbody tr.odd { background-color: #F2F2F2; }
+table {
+			  font-family: arial, sans-serif;
+			  border-collapse: collapse;
+			  width: 100%;
+			}
+
+			td, th {
+			  border: 1px solid #dddddd;
+			  text-align: left;
+			  padding: 8px;
+			}
+
+			tr:nth-child(even) {
+			  background-color: #dddddd;
+			}
+			.center {
+			  display: block;
+			  margin-left: auto;
+			  margin-right: auto;
+			  width: 25%;
+        height: 25%;
+			  background-color: orange;
+			}
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <j:set var="spc" value="&amp;nbsp;&amp;nbsp;" />
+        <!-- GENERAL INFO -->
+        <p style="border: 0px solid black;background-color:orange;color:white;" align="center" bgcolor="orange"><strong>TELE TEACHERS</strong></p>
+
+        <table>
+          <tr class="gray">
+            <td align="right">
+              <j:choose>
+                <j:when test="${build.result=='SUCCESS'}">
+                  <img src="${rooturl}static/e59dfe28/images/32x32/blue.gif" />
+                </j:when>
+                <j:when test="${build.result=='FAILURE'}">
+                  <img src="${rooturl}static/e59dfe28/images/32x32/red.gif" />
+                </j:when>
+                <j:otherwise>
+                  <img
+                    src="${rooturl}static/e59dfe28/images/32x32/yellow.gif" />
+                </j:otherwise>
+              </j:choose>
+            </td>
+            <td valign="center">
+              <b style="font-size: 150%;">BUILD ${build.result}</b>
+            </td>
+          </tr>
+          <tr>
+            <td>Build URL</td>
+            <td>
+              <a href="https://jenkins.teleteachers.us/${build.url}">https://jenkins.teleteachers.us/${build.url}</a>
+            </td>
+          </tr>
+          <tr>
+            <td>Project:</td>
+            <td>${project.name}</td>
+          </tr>
+          <tr>
+            <td>Date of build:</td>
+            <td>${it.timestampString}</td>
+          </tr>
+          <tr>
+            <td>Build duration:</td>
+            <td>${build.durationString}</td>
+          </tr>
+          <j:choose>
+            <j:when test="${build.result=='SUCCESS'}">
+            <tr>
+              <td>Status:</td>
+              <td>Deployed</td>
+            </tr>
+          <tr>
+            <td>Changes</td>
+            <td><p>Check build changes on attached file or <b><a href="${rooturl}${build.url}/last-changes">here</a></b>.</p></td>
+          </tr>
+          <tr>
+            <td>Check SonarQube Code Quality</td>
+            <td><a href="https://sonar.teleteachers.us/dashboard?id=tt-api">here</a></td>
+          </tr>
+            </j:when>
+        </j:choose>
+        </table>
+      </div>
+     <j:choose>
+        <j:when test="${build.result=='SUCCESS'}">
+          <p style="border: 0px solid black;background-color:blue;color:white;"><strong>BUILD ARTIFACTS:</strong></p>
+          <table>
+          <tr style="background-color:white;color:black;">
+          <th>&#9658;</th>
+          <th><strong>build number ${build.number} available in aws ecr repo</strong></th>
+          </tr>
+          </table>
+    </j:when>
+    </j:choose>
+
+    <!-- CHANGE SET -->
+     <j:set var="changeSet" value="${build.changeSets}" />
+     <j:if test="${changeSet!=null}">
+       <j:set var="hadChanges" value="false" />
+       <j:forEach var="csLoop" items="${changeSet}" varStatus="loop">
+           <j:set var="hadChanges" value="true" />
+       </j:forEach>
+       <p style="border: 0px solid black;background-color:orange;color:white;" align="center" bgcolor="orange"><strong>CHANGES</strong></p>
+       <j:if test="${hadChanges}">
+     <TABLE width="100%">
+  <thead>
+    <tr style="background-color:#B8B8B8;">
+      <th width="60px">User</th>
+      <th width="80px">Date</th>
+      <th width="60px">Change ID</th>
+      <th width="460px">Comment</th>
+    </tr>
+  </thead>
+    <j:forEach var="csss" items="${changeSet}" varStatus="loop">
+         <j:forEach var="log" indexVar="i" items="${csss.logs}" varStatus="loop">
+		<j:set var="hadChanges" value="true"/>
+          <tr>
+            <td width="60px">${log.author}</td>
+            <td width="80px">${log.date}</td>
+            <td width="60px">${log.commitId}</td>
+            <td width="460px">${log.msg}</td>
+          </tr>
+      </j:forEach>	
+    </j:forEach>
+   </TABLE>
+  </j:if>
+    <j:if test="${!hadChanges}">
+       <table>
+     <thead>
+          <tr>
+             <th>&#9658; No Changes</th>
+          </tr>
+      </thead>
+        </table>
+    </j:if>
+  <BR/>
+   </j:if>
+
+<!-- CONSOLE OUTPUT -->
+
+<j:getStatic var="resultFailure" field="FAILURE" className="hudson.model.Result"/>
+<j:if test="${build.result==resultFailure}">
+<TABLE width="100%" cellpadding="0" cellspacing="0">
+<TR>
+<TD><B>CONSOLE OUTPUT</B></TD>
+</TR>
+<j:forEach var="line" items="${build.getLog(200)}">
+<TR>
+<TD class="console">${line}</TD>
+</TR>
+</j:forEach>
+</TABLE>
+<BR/>
+</j:if>
+    </body>
+  </html>
+</j:jelly>
